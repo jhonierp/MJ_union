@@ -1,0 +1,427 @@
+{% extends 'barra_lateral.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Cliente</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="titulo_registro">Registro de Usuario</h2>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="header-container">
+                <h2 class="section-header">Datos de Personales</h2>
+                <div class="section-container">
+                    
+                    <div class="section-left">
+                        <label for="nombre_1" class="form-label">Primer Nombre:</label>
+                        <input type="text" id="nombre_1" name="nombre_1" class="form-control" required>
+                    </div>
+                    <div class="section-right">
+                        <label for="nombre_2" class="form-label">Segundo Nombre:</label>
+                        <input type="text" id="nombre_2" name="nombre_2" class="form-control">
+                    </div>
+                    <div class="section-left">
+                        <label for="apellido_1" class="form-label">Primer Apellido:</label>
+                        <input type="text" id="apellido_1" name="apellido_1" class="form-control" required>
+                    </div>
+                    <div class="section-right">
+                        <label for="apellido_2" class="form-label">Segundo Apellido:</label>
+                        <input type="text" id="apellido_2" name="apellido_2" class="form-control">
+                    </div>
+                    <div class="section-left">
+                        <label for="genero" class="form-label">Género:</label>
+                        <select id="genero" name="genero" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for genero in generos %}
+                            <option value="{{ genero.id }}">{{ genero.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-right">
+                        <label for="tipo_documento" class="form-label">Tipo de Documento:</label>
+                        <select id="tipo_documento" name="tipo_documento" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for documento in documentos %}
+                            <option value="{{ documento.id }}">{{ documento.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="numero_documento" class="form-label">Número de Documento:</label>
+                        <input type="text" id="numero_documento" name="numero_documento" class="form-control" required>
+                    </div>
+                    <div class="section-right">
+                        <label for="fecha_expedicion" class="form-label">Fecha de Expedición:</label>
+                        <input type="date" id="fecha_expedicion" name="fecha_expedicion" class="form-control" required>
+                    </div>
+                    <div class="section-left">
+                        <label for="departamento_expedicion" class="form-label">Departamento de Expedición:</label>
+                        <select id="departamento_expedicion" name="departamento_expedicion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for departamento in departamentos %}
+                            <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-right">
+                        <label for="ciudad_expedicion" class="form-label">Ciudad de Expedición:</label>
+                        <select id="ciudad_expedicion" name="ciudad_expedicion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for ciudad in ciudades %}
+                            <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="estado_civil" class="form-label">Estado Civil:</label>
+                        <select id="estado_civil" name="estado_civil" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for estadoc in estadosc %}
+                            <option value="{{ estadoc.id }}">{{ estadoc.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-right">
+                        <label for="ocupacion" class="form-label">Ocupación:</label>
+                        <select id="ocupacion" name="ocupacion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for ocupacion in ocupaciones %}
+                            <option value="{{ ocupacion.id }}">{{ ocupacion.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <h2 class="section-header">Datos de Nacimiento</h2>
+                <div class="section-container">
+                    <div class="section-left">
+                        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control" required>
+                    </div>
+                    <div class="section-right">
+                        <label for="departamento_nacimiento" class="form-label">Departamento de Nacimiento:</label>
+                        <select id="departamento_nacimiento" name="departamento_nacimiento" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for departamento in departamentos %}
+                            <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="ciudad_nacimiento" class="form-label">Ciudad de Nacimiento:</label>
+                        <select id="ciudad_nacimiento" name="ciudad_nacimiento" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for ciudad in ciudades %}
+                            <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-right">
+                    </div>
+                </div>
+                <h2 class="section-header">Dirección</h2>
+                <div class="section-container">
+                    <div class="section-left">
+                        <label for="nomenclatura" class="form-label">Nomenclatura:</label>
+                        <input type="text" id="nomenclatura" name="nomenclatura" class="form-control">
+                    </div>
+                    <div class="section-right">
+                        <label for="barrio_vereda" class="form-label">Barrio o Vereda:</label>
+                        <input type="text" id="barrio_vereda" name="barrio_vereda" class="form-control" required>
+                    </div>
+                    <div class="section-left">
+                        <label for="departamento_direccion" class="form-label">Departamento:</label>
+                        <select id="departamento_direccion" name="departamento_direccion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for departamento in departamentos %}
+                            <option value="{{ departamento.id }}">{{ departamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-right">
+                        <label for="ciudad_direccion" class="form-label">Ciudad:</label>
+                        <select id="ciudad_direccion" name="ciudad_direccion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for ciudad in ciudades %}
+                            <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="pais_direccion" class="form-label">País:</label>
+                        <select id="pais_direccion" name="pais_direccion" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for pais in paises %}
+                            <option value="{{ pais.id }}">{{ pais.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <h2 class="section-header">Datos de Contacto</h2>
+                <div class="section-container">
+                    
+                    <div class="section-left">
+                        <label for="correo_electronico" class="form-label">Correo Electrónico:</label>
+                        <input type="email" id="correo_electronico" name="correo_electronico" class="form-control">
+                    </div>
+                    <div class="section-right">
+                        <label for="telefono_fijo" class="form-label">Teléfono Fijo:</label>
+                        <input type="text" id="telefono_fijo" name="telefono_fijo" class="form-control" >
+                    </div>
+                    <div class="section-left">
+                        <label for="celular1" class="form-label">Celular 1:</label>
+                        <input type="text" id="celular1" name="celular1" class="form-control" required>
+                    </div>
+                    
+                    <div class="section-right">
+                        <label for="celular2" class="form-label">Celular 2:</label>
+                        <input type="text" id="celular2" name="celular2" class="form-control">
+                    </div>
+                </div>
+                <h2 class="section-header">Otros</h2>
+                <div class="section-container">
+                    
+                    <div class="section-left">
+                        <label for="tipo_vivienda" class="form-label">Tipo de Vivienda:</label>
+                        <select id="tipo_vivienda" name="tipo_vivienda" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for vivienda in viviendas %}
+                            <option value="{{ vivienda.id }}">{{ vivienda.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                        </select>
+                    </div>
+                    <div class="section-right">
+                        <label for="estudios" class="form-label">Estudios:</label>
+                        <select id="estudios" name="estudios" class="form-select">
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for estudio in estudios %}
+                            <option value="{{ estudio.id }}">{{ estudio.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="deporte_favorito" class="form-label">Deporte Favorito:</label>
+                        <input type="text" id="deporte_favorito" name="deporte_favorito" class="form-control">
+                    </div>
+                    <div class="section-right">
+                        <label for="edad" class="form-label">Edad:</label>
+                        <input type="number" id="edad" name="edad" class="form-control">
+                    </div>
+                    <div class="section-left">
+                        <label for="discapacidad" class="form-label">Discapacidad:</label>
+                        <select id="discapacidad" name="discapacidad" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for discapacidad in discapacidades %}
+                            <option value="{{ discapacidad.id }}">{{ discapacidad.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                    </div>
+                    <div class="section-right">
+                    </div>
+                </div>
+                <h2 class="section-header">Nombre de Integrante Antiguo o Recomendado</h2>
+                <div class="section-container">
+                    
+                    <div class="section-left">
+                        <label for="nombre_integrante" class="form-label">Nombre Completo:</label>
+                        <input type="text" id="nombre_integrante" name="nombre_integrante" class="form-control">
+                    </div>
+                    <div class="section-right">
+                        <label for="direccion_integrante" class="form-label">Dirección:</label>
+                        <input type="text" id="direccion_integrante" name="direccion_integrante" class="form-control">
+                    </div>
+                    <div class="section-left">
+                        <label for="telefono_integrante" class="form-label">Teléfono:</label>
+                        <input type="text" id="telefono_integrante" name="telefono_integrante" class="form-control">
+                    </div>
+                </div>
+                <h2 class="section-header">Referencia Familiar o Cónyuge</h2>
+                <div class="section-container">
+                    
+                    <div class="section-left">
+                        <label for="nombre_referencia" class="form-label">Nombre Completo:</label>
+                        <input type="text" id="nombre_referencia" name="nombre_referencia" class="form-control">
+                    </div>
+                    <div class="section-right">
+                        <label for="direccion_referencia" class="form-label">Dirección:</label>
+                        <input type="text" id="direccion_referencia" name="direccion_referencia" class="form-control">
+                    </div>
+                    <div class="section-left">
+                        <label for="telefono_referencia" class="form-label">Teléfono:</label>
+                        <input type="text" id="telefono_referencia" name="telefono_referencia" class="form-control">
+                    </div>
+                </div>
+                <h2 class="section-header">Beneficiario de Aporte o Deuda en Caso de Fallecimiento</h2>
+                    <div class="section-person">
+                        <h3>Beneficiario 1</h3>
+                        <div class="section-container-2">
+                            <div class="section-left-2">
+                                <label for="nombre_beneficiario_1" class="form-label">Nombre Completo:</label>
+                                <input type="text" id="nombre_beneficiario_1" name="nombre_beneficiario_1" class="form-control">
+                            </div>
+                            <div class="section-middle-2">
+                                <label for="porcentaje_beneficiario_1" class="form-label">Porcentaje:</label>
+                                <select id="porcentaje_beneficiario_1" name="porcentaje_beneficiario_1" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for porcentaje in porcentajes %}
+                                    <option value="{{ porcentaje.id }}">{{ porcentaje.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="section-right-2">
+                                <label for="parentesco_beneficiario_1" class="form-label">Parentesco:</label>
+                                <select id="parentesco_beneficiario_1" name="parentesco_beneficiario_1" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for parentesco in parentescos %}
+                                    <option value="{{ parentesco.id }}">{{ parentesco.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3>Beneficiario 2</h3>
+                        <div class="section-container-2">
+                            <div class="section-left-2">
+                                <label for="nombre_beneficiario_2" class="form-label">Nombre Completo:</label>
+                                <input type="text" id="nombre_beneficiario_2" name="nombre_beneficiario_2" class="form-control">
+                            </div>
+                            <div class="section-middle-2">
+                                <label for="porcentaje_beneficiario_2" class="form-label">Porcentaje:</label>
+                                <select id="porcentaje_beneficiario_2" name="porcentaje_beneficiario_2" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for porcentaje in porcentajes %}
+                                    <option value="{{ porcentaje.id }}">{{ porcentaje.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="section-right-2">
+                                <label for="parentesco_beneficiario_2" class="form-label">Parentesco:</label>
+                                <select id="parentesco_beneficiario_2" name="parentesco_beneficiario_2" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for parentesco in parentescos %}
+                                    <option value="{{ parentesco.id }}">{{ parentesco.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3>Beneficiario 3</h3>
+                        <div class="section-container-2">
+                            <div class="section-left-2">
+                                <label for="nombre_beneficiario_3" class="form-label">Nombre Completo:</label>
+                                <input type="text" id="nombre_beneficiario_3" name="nombre_beneficiario_3" class="form-control">
+                            </div>
+                            <div class="section-middle-2">
+                                <label for="porcentaje_beneficiario_3" class="form-label">Porcentaje:</label>
+                                <select id="porcentaje_beneficiario_3" name="porcentaje_beneficiario_3" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for porcentaje in porcentajes %}
+                                    <option value="{{ porcentaje.id }}">{{ porcentaje.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="section-right-2">
+                                <label for="parentesco_beneficiario_3" class="form-label">Parentesco:</label>
+                                <select id="parentesco_beneficiario_3" name="parentesco_beneficiario_3" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for parentesco in parentescos %}
+                                    <option value="{{ parentesco.id }}">{{ parentesco.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3>Beneficiario 4</h3>
+                        <div class="section-container-2">
+                            <div class="section-left-2">
+                                <label for="nombre_beneficiario_4" class="form-label">Nombre Completo:</label>
+                                <input type="text" id="nombre_beneficiario_4" name="nombre_beneficiario_4" class="form-control">
+                            </div>
+                            <div class="section-middle-2">
+                                <label for="porcentaje_beneficiario_4" class="form-label">Porcentaje:</label>
+                                <select id="porcentaje_beneficiario_4" name="porcentaje_beneficiario_4" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for porcentaje in porcentajes %}
+                                    <option value="{{ porcentaje.id }}">{{ porcentaje.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="section-right-2">
+                                <label for="parentesco_beneficiario_4" class="form-label">Parentesco:</label>
+                                <select id="parentesco_beneficiario_4" name="parentesco_beneficiario_4" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione aquí</option>
+                                    {% for parentesco in parentescos %}
+                                    <option value="{{ parentesco.id }}">{{ parentesco.descripcion }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    </div>
+                <h2 class="section-header">Compumaster</h2>
+                <div class="section-container">
+                    <div class="section-left">
+                        <label for="email_compumaster" class="form-label">Email Compumaster:</label>
+                        <input type="email" id="email_compumaster" name="email_compumaster" class="form-control" required>
+                    </div>
+                    <div class="section-right">
+                        <label for="grupo" class="form-label">Grupo:</label>
+                        
+                        <select id="grupo" name="grupo" class="form-select" required>
+                            <option value="" disabled selected>seleccione aqui</option>
+                            {% for grupo in grupos %}
+                            <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="section-left">
+                        <label for="contrasena_compumaster" class="form-label">Contraseña Compumaster:</label>
+                        <input type="password" id="contrasena_compumaster" name="contrasena_compumaster" class="form-control" required>
+                    </div>
+
+                    <div class="section-right">
+                        <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña:</label>
+                        <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" class="form-control" required>
+                    </div>
+                        
+                </div>
+                <div class="section-person">
+                    <h3 style="text-align: center;">
+                        Fecha De Registro De Usuario: <span id="mesYAnioActual"></span>
+                    </h3>
+                    <script>
+                        // Obtener la fecha actual
+                        var fechaActual = new Date();
+                    
+                        // Obtener el mes y el año de la fecha actual
+                        var mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11
+                        var anioActual = fechaActual.getFullYear();
+                    
+                        // Mostrar el mes y el año actual en la página
+                        var mesYAnioActual = mesActual + "/" + anioActual;
+                        document.getElementById("mesYAnioActual").textContent = mesYAnioActual;
+                    </script>
+                        
+                </div>
+                </br>
+                <button type="submit" class="btn btn-primary">Guardar Datos</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+{% endblock %}

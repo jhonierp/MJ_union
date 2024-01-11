@@ -1,0 +1,121 @@
+{% extends 'barra_lateral.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla con 30 columnas</title>
+    <style>
+        * {
+            padding:0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px; /* Letras más pequeñas */
+            border: 2px solid black; /* Borde más grueso y negro */
+        }
+
+        th, td {
+            padding: 10px; /* Más espacio dentro de las celdas */
+            text-align: center;
+            border: 1px solid black; /* Líneas internas de igual grosor y color */
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 26px; /* Establecer tamaño de fuente para los encabezados */
+            color: #000000;
+        }
+
+        th:first-child,
+        th:nth-child(1) { /* Aplica estilo a las primeras dos columnas */
+            text-align: left;
+            font-size: 10px; /* Letras más pequeñas */
+            width: 50px; /* Ancho personalizado para id y cod */
+        }
+
+        .bold-row th {
+            font-weight: bold;
+        }
+        .fila-par {
+            background-color: #61826460; /* Color de fondo para filas pares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+        .fila-impar {
+            background-color: #61826433; /* Color de fondo para filas impares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+        .header {
+            background-color: #618264; 
+            color: white; /* Texto blanco */
+            display: flex;
+            padding: 20px;
+            font-size: 24px; /* Tamaño de fuente más grande */
+            font-weight: bold;
+        }
+        .op{
+            flex: 1;
+            text-align: left;
+        }
+        .po{
+            flex: 2;
+            text-align: center;
+        }
+        .pp{
+            flex: 3;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <op>Ahorros</op>
+    </div>
+    <br>
+    {% if person_fin %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th style="width: 800px;">Nombres</th>
+                <th>Grupo</th>
+                <th>fecha regis</th>
+                <th>Num Recibo</th>
+                <th>Aportes Anteriores</th>
+                <th>Aportes Pendientes</th>
+                <th>Aportes Por Pagar</th>
+                <th>Aportes Recibidos</th>
+                <th>Saldo Aportes Por Pagar</th>
+                <th>Retiro De Aportes</th>
+                <th>Total De Aportes</th>
+            </tr>
+            {% for i in person_fin %}
+                <tr class="{% cycle 'fila-par' 'fila-impar' %}">
+                    <td>{{ i.persona.id }}</td>
+                    <td>{{ i.persona.nombre_1 }} {{ i.persona.apellido_1 }}</td>
+                    <td>{{ i.persona.grupo.nombre }}</td>
+                    <td>{{ i.fecha }}</td>
+                    <td>{{ i.ahorro.num_recibo }}</td>
+                    <td>{{ i.ahorro.aportes_anteriores }}</td>
+                    <td>{{ i.ahorro.aportes_pendientes }}</td>
+                    <td>{{ i.ahorro.aportes_por_pagar }}</td>
+                    <td>{{ i.ahorro.aportes_recibidos }}</td>
+                    <td>{{ i.ahorro.saldo_aportes_por_pagar }}</td>
+                    <td>{{ i.ahorro.retiro_de_aportes }}</td>
+                    <td>{{ i.ahorro.total_de_aportes }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}
+
+

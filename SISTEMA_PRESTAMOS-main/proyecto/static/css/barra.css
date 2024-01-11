@@ -1,0 +1,261 @@
+* {
+    /*margin:0;*/
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+/*diccionario de colores*/
+:root{
+    --body-color: #d0e7d292;
+    --sidebar-color:#ffffff;
+    --primary-color:#618264;
+    --primary-color-light:#d0e7d2e8;
+    --toggle-color:#618264;
+    --text-color:#606060;   
+
+    --tran-03: all 0.2s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.4s ease;
+}
+/*color al fondo*/
+body{
+    background-color: var(--body-color);
+}
+
+/*el background de la barra lateral y tamaño al estar abierta*/
+.sidebar {
+    position: fixed;
+    top:0;
+    left:0;
+    height: 100%;
+    width: 250px;
+    padding: 10px 14px;
+    background:var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100;
+    border-right: 1px solid #d0e7d292; /* Borde superior blanco opcional */
+
+}
+/*tamaño de la barra lateral al cerrarse*/
+.sidebar.close {
+    width: 88px;
+}
+
+/*oculta texto de salir y de rol al minimizar sidebar*/
+.sidebar.close .text:not(.exit-link) {
+    opacity: 0;
+}
+
+/*ajusta tamaño de separacion en barra lateral*/
+.sidebar li {
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items:center;
+    margin-top: 10px;
+}
+/*ajusta alguna imagen y los uconos*/
+.sidebar header .image,
+.sidebar .icon {
+    min-width: 60px;
+    border-radius: 6px;
+}
+/*icons se hacen mas a la derecha*/
+.sidebar .icon {
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    font-size: 33px;
+}
+/*color a iconos y texto*/
+.sidebar .text,
+.sidebar .icon {
+    color:var(--text-color);
+    transition: var(--tran-03);
+}
+/*negrilla y cosas asi a las letras*/
+.sidebar .text {
+    font-size: 17px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+.sidebar.close.text {
+    opacity: 0;
+}
+.sidebar header {
+    position: relative;
+}
+.sidebar header .logo {
+    display: flex;
+    flex-direction: column;
+}
+/*nombre esmpresa*/
+.name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+/*nombre del rol*/
+.profe {
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+.sidebar header .image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar header .image img{
+    width: 40px;
+    border-radius: 6px;
+}
+/*3 rayas*/
+.sidebar header .toggle{
+    /*position: absolute;*/
+    top:20%;
+    right:0px;
+    height: 35px;
+    width: auto;
+    background-color:var(--primary-color);
+    color: var(--sidebar-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+/*separar los nombres de arriba del buscador*/
+.sidebar .menu{
+        margin-top: 90px;
+}
+/*ajusta los iconos y las letras correctamente*/
+.sidebar li a {
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+/*de la anterior funcion los hace flotar para la sidebar abierta*/
+.sidebar li a:hover {
+    background-color: var(--primary-color);
+}
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text {
+    color: var(--sidebar-color);    
+}
+/*las hace mas esteticas al minimizar la sidebar*/
+.sidebar .menu-bar {
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+/*quita las barras para hacer scroll en la sidebar*/
+.menu-bar::-webkit-scrollbar {
+    display: none;
+}
+
+/*es el container de cerrar sesion y modo oscuro*/
+.bottom-content {
+    overflow: hidden;
+    width: 100%;
+    
+}
+
+/*hace que lo que se escriba tena paading en izquierda*/
+.home {
+    position: relative;
+    top: 0;
+    left: 250px;
+    width: 100%;
+    transition: var(--tran-05);
+}
+/*texto dentro del contenido*/
+.home .text {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+    padding: 12px 60px;
+}
+/* el padding izq cuando se cierra la sidebar*/
+.sidebar.close ~ .home {
+    left: 78px; 
+    width: calc(100% - 78px);
+}
+.submenu {
+    display: none;
+}
+.nav-link.active .submenu {
+    display: block;
+}
+
+/* Estilo para ocultar submenús por defecto */
+.submenu {
+    display: none;
+}
+/* Estilo para mostrar submenús cuando el elemento del menú se selecciona */
+.nav-link.active .submenu {
+    display: block;
+}
+/* Dropdown styles */
+.dropdown {
+    visibility: hidden;
+    position: absolute;
+    top: 30%;
+    left: 100%;
+    background-color: var(--primary-color);
+    width: 200px;
+    border-radius: 0 6px 6px 6px;
+    z-index: 1;
+}
+
+.nav-link:hover .dropdown {
+    visibility: visible;
+}
+.dropdown-item {
+    padding: 10px;
+    text-decoration: none;
+    color: var(--sidebar-color);
+    display: block;
+    font-weight: bold;
+    font-size: 15px;
+}
+.dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+}
+.dropdown.submenu-1 {
+    top: 263px; /* Ajusta el valor de top según tu preferencia */
+}
+/* Estilos para el segundo submenú */
+.dropdown.submenu-2 {
+    top: 324px; /* Ajusta el valor de top según tu preferencia */
+}
+.dropdown.submenu-3 {
+    top: 100px; /* Ajusta el valor de top según tu preferencia */
+}
+/* Agrega un cuadro de color rojo al final de la barra lateral */
+.red-box {
+    width: 100%; /* Ancho igual al 100% de la barra lateral */
+    height: 50px; /* Alto de 5px */
+    background-color: var(--body-color); /* Color de fondo rojo */
+    position: absolute; /* Posición absoluta para que esté al final de la barra lateral */
+    bottom: 0px; /* Alineación en la parte inferior */
+    left: 0; /* Alineación en la parte izquierda (inicio de la barra lateral) */
+    z-index: 99; /* Z-index para asegurarse de que esté encima del contenido */
+    border-top: 0.5px solid #ffffff; /* Borde superior blanco opcional */
+    height: 70px;
+}

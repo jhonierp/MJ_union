@@ -1,0 +1,120 @@
+{% extends 'barra_lateral.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Edit</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            border: 2px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid black;
+            width: 100px;
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 26px; /* Establecer tamaño de fuente para los encabezados */
+            color: #000000;
+        }
+
+        .bold-row th {
+            font-weight: bold;
+        }
+
+        /* Agregar estilos para el formulario de búsqueda */
+        form {
+            margin: 10px 0;
+        }
+
+        label {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        input[type="text"] {
+            padding: 10px 100px;
+            border: 1px solid #79AC78;
+            border-radius: 5px;
+        }
+        .btn-second {
+            background-color: #ffffff;
+            border: 1px solid ; /* Bordes de color azul para el botón */
+            border-radius: 10px;
+            color: #618264;
+            font-weight: bold;
+            padding: 2px 20px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .btn-second:hover {
+            background-color: #618264;
+            color: rgb(255, 255, 255);
+        }
+        .header {
+            background-color: #618264; 
+            color: white; /* Texto blanco */
+            text-align: center;
+            padding: 20px;
+            font-size: 24px; /* Tamaño de fuente más grande */
+            font-weight: bold;
+        }
+        .fila-par {
+            background-color: #6182646f; /* Color de fondo para filas pares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+        .fila-impar {
+            background-color: #61826448; /* Color de fondo para filas impares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        EDITAR DE REGISTROS
+    </div>
+    </body>
+    <div>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label for="search">Buscar Persona:</label>
+            <input type="text" name="keyword" id="keyword">
+        </form>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                
+                <th> CÉDULA</th>
+                <th>NOMBRES COMPLETOS</th>
+                <th>GRUPOS</th>
+                <th>EDITAR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for persona in personas %}
+                <tr class="{% cycle 'fila-par' 'fila-impar' %}">
+                    <td>{{ persona.num_documento }}</td>
+                    <td>{{ persona.nombre_1 }} {{ persona.nombre_2 }} {{ persona.apellido_1 }} {{ persona.apellido_2 }}</td>
+                    <td>{{ persona.grupo.nombre }}</td>
+                    
+                    <td><a href="registro_edit/{{persona.id}}" type="submit" class="btn btn-second">EDITAR</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+{% endblock %}

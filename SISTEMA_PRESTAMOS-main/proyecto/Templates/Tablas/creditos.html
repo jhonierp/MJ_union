@@ -1,0 +1,139 @@
+{% extends 'barra_lateral.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Créditos</title>
+    <style>
+        * {
+            padding:0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px; /* Letras más pequeñas */
+            border: 2px solid black; /* Borde más grueso y negro */
+        }
+
+        th, td {
+            padding: 10px; /* Más espacio dentro de las celdas */
+            text-align: center;
+            border: 1px solid black; /* Líneas internas de igual grosor y color */
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 26px; /* Establecer tamaño de fuente para los encabezados */
+            color: #000000;
+        }
+
+        th:first-child,
+        th:nth-child(1) { /* Aplica estilo a las primeras dos columnas */
+            text-align: left;
+            font-size: 10px; /* Letras más pequeñas */
+            width: 50px; /* Ancho personalizado para id y cod */
+        }
+
+        .bold-row th {
+            font-weight: bold;
+        }
+        .fila-par {
+            background-color: #61826460; /* Color de fondo para filas pares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+        .fila-impar {
+            background-color: #61826433; /* Color de fondo para filas impares */
+            font-size: 22px; /* Tamaño de fuente para filas pares */
+            color: #000000;
+        }
+        .header {
+            background-color: #618264; 
+            color: white; /* Texto blanco */
+            display: flex;
+            padding: 20px;
+            font-size: 24px; /* Tamaño de fuente más grande */
+            font-weight: bold;
+        }
+        .op{
+            flex: 1;
+            text-align: left;
+        }
+        .po{
+            flex: 2;
+            text-align: center;
+        }
+        .pp{
+            flex: 3;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <op>Créditos</op>
+    </div>
+    <br>
+    {% if person_fin %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th style="width: 800px;">Nombres</th>
+                <th>fecha regis</th>
+                <th>Solicitud de Crédito</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Final</th>
+                <th>Valor Crédito Solicitado</th>
+                <th>Número de Días de Crédito</th>
+                <th>Plazo en Meses</th>
+                <th>Cuota de Crédito</th>
+                <th>Valor Cuota Total</th>
+                <th>Crédito Actual</th>
+                <th>Total Recibido</th>
+                <th>Abono de Crédito</th>
+                <th>Saldo de Crédito</th>
+                <th>Interés de Crédito</th>
+                <th>Interés Anterior</th>
+                <th>Total de Intereses a Pagar</th>
+                <th>Intereses Recibidos</th>
+                <th>Saldo de Intereses</th>
+                <th>Nueva Afiliación</th>
+                <th>Nota</th>
+            </tr>
+            {% for i in person_fin %}
+                <tr class="{% cycle 'fila-par' 'fila-impar' %}">
+                    <td>{{ i.persona.id }}</td>
+                    <td>{{ i.persona.nombre_1 }} {{ i.persona.apellido_1 }}</td>
+                    <td>{{ i.persona.fecha_regis }}</td>
+                    <td>{{ i.credito.solicitud_de_credito }}</td>
+                    <td>{{ i.credito.fecha_inicio }}</td>
+                    <td>{{ i.credito.fecha_final }}</td>
+                    <td>{{ i.credito.valor_credito_solicitado }}</td>
+                    <td>{{ i.credito.numero_dias_credito }}</td>
+                    <td>{{ i.credito.plazo_meses }}</td>
+                    <td>{{ i.credito.cuota_credito }}</td>
+                    <td>{{ i.credito.valor_cuota_total }}</td>
+                    <td>{{ i.credito.credito_actual }}</td>
+                    <td>{{ i.credito.total_recibido }}</td>
+                    <td>{{ i.credito.abono_credito }}</td>
+                    <td>{{ i.credito.saldo_credito }}</td>
+                    <td>{{ i.credito.interes_credito }}</td>
+                    <td>{{ i.credito.interes_anterior }}</td>
+                    <td>{{ i.credito.total_interes_a_pagar }}</td>
+                    <td>{{ i.credito.intereses_recibidos }}</td>
+                    <td>{{ i.credito.saldo_intereses }}</td>
+                    <td>{{ i.credito.nueva_afiliacion }}</td>
+                    <td>{{ i.credito.nota }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}

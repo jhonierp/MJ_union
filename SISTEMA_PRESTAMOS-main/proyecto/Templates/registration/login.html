@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inicio de sesión</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/loger.css' %}">
+  <script src="{% static 'js/loger.js' %}"></script>
+</head>
+<body>
+  </form>
+  <div class="container">
+    <div class="top"></div>
+    <div class="bottom"></div>
+    <div class="center">
+      <h2>Login | CompuMaster</h2>
+
+      {% if form.errors %}
+        <div class="alert alert-danger"><p>Usuario ó Contraseña INCORRECTAS. </p></div>
+      {% endif %}
+
+      <form id="form-login" method="post" action="">
+      {% csrf_token %}
+
+      <div class="row">
+        <div id="username" placeholder="Email ó Identificacion"></div>
+        {{ form.username }}
+      </div>
+      
+      <div class="row">
+        <div type="password" id="password" placeholder="Contraseña"></div>
+        {{ form.password }}
+        
+      </div>
+      
+      <div class="row">
+        <button id="show-password" type="button">Mostrar Contraseña</button>
+      </div>
+      <!--<a href="#" style="margin-bottom: 10px;">olvide mi contraseña</a>-->
+      <div class="buttons">
+        <button class="button">Iniciar Sesion</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
