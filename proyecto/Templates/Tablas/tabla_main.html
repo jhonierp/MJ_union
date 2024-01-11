@@ -1,0 +1,570 @@
+{% extends 'barra_lateral.html' %}
+{% load static %}
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tabla con 30 columnas</title>
+        <style>
+            * {
+                padding:0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 12px; /* Letras más pequeñas */
+                border: 2px solid black; /* Borde más grueso y negro */
+            }
+    
+            th, td {
+                padding: 10px; /* Más espacio dentro de las celdas */
+                text-align: center;
+                border: 1px solid black; /* Líneas internas de igual grosor y color */
+            }
+    
+            th{
+                font-weight: bold;
+                font-size: 26px; /* Establecer tamaño de fuente para los encabezados */
+                color: #000000;
+            }
+            tfoot{
+                background-color: rgb(157, 192, 139);
+                font-weight: bold;
+                font-size: 19px; /* Establecer tamaño de fuente para los encabezados */
+                color: #000000;
+            } 
+            .bold-row th {
+                font-weight: bold;
+            }
+            .fila-par {
+                background-color: #61826460; /* Color de fondo para filas pares */
+                font-size: 22px; /* Tamaño de fuente para filas pares */
+                color: #000000;
+            }
+            .fila-impar {
+                background-color: #61826433; /* Color de fondo para filas impares */
+                font-size: 22px; /* Tamaño de fuente para filas pares */
+                color: #000000;
+            }
+            body {
+                margin: 0;
+            }
+            .header {
+                background-color: #618264;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+                font-size: 24px;
+                font-weight: bold;
+                width: 230%;
+                box-sizing: border-box;
+            }
+
+            .op{
+                flex: 1;
+                text-align: left;
+            }
+            .po{
+                flex: 2;
+                text-align: center;
+            }
+            .pp{
+                flex: 3;
+                text-align: right;
+            }
+            td {
+                position: relative;
+                text-align: left;
+            }
+
+            .select-checkbox {
+                width: 20px;  /* Ajusta el ancho según tus preferencias */
+                height: 20px; /* Ajusta la altura según tus preferencias */
+                margin-right: 5px;  /* Agrega espacio entre la casilla y la imagen */
+            }
+
+            .custom-image {
+                width: 40px;
+                vertical-align: middle;  /* Alinea verticalmente la imagen en el centro */
+            }
+
+            .select-checkbox,
+            .custom-image {
+                cursor: pointer;
+            }
+            
+        </style>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+        
+    </head>
+    <body>
+        <div class="header">
+            <div>Administrador: {{ name_admin }} | Grupo: {{ grupo_l }}| Fecha: {{ mesYAnioSeleccionado }}</div>
+            <!--<div class="po">Grupo: {{ grupo_l }}</div>
+            <div class="pp"> c</div>-->
+        </div>
+        <br>
+        {% if personas_activas %}
+        <table id="compu_tabla">
+            <thead>
+                <tr>    
+                    <th>&nbsp;&nbsp;&nbsp;FAX&nbsp;&nbsp;&nbsp;</th>
+                    <th>ID</th>
+                    <th>personaID</th>
+                    <th>ahorroID</th>
+                    <th>creditoID</th>
+                    <th style="width: 100;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nombres&nbsp;Completos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Grupo</th>
+                    <th>Num Recibo</th>
+                    <th style="background-color: rgb(218, 221, 177);">Aportes Anteriores</th>
+                    <th style="background-color: rgb(218, 221, 177);">Aportes Pendientes</th>
+                    <th style="background-color: rgb(218, 221, 177);">Aportes Por Pagar</th>
+                    <th>Aportes Recibidos</th>
+                    <th style="background-color: rgb(218, 221, 177);">Saldos Aportes Por Pagar</th>
+                    <th>Retiro De Aportes</th>
+                    <th style="background-color: rgb(218, 221, 177);">Total De Aportes</th>
+                    <th style="background-color: rgb(0, 0, 0);"></th>
+                    <th>Solicitud De Credito</th>
+                    <th>Fecha Inicial</th>
+                    <th style="background-color: rgb(218, 221, 177);">Fecha Final</th>
+                    <th>Valor Credito Solicitado</th>
+                    <th style="background-color: rgb(218, 221, 177);">#Dias Cred</th>
+                    <th>#Meses</th>
+                    <th style="background-color: rgb(218, 221, 177);">Cuota Credito</th>
+                    <th style="background-color: rgb(218, 221, 177);">Valor Cuota Full</th>
+                    <th style="background-color: rgb(218, 221, 177);">Credito Actual</th>
+                    <th>Abono Credito</th>
+                    <th style="background-color: rgb(218, 221, 177);">Saldo Credito</th>
+                    <th style="background-color: rgb(218, 221, 177);">Interes Credito</th>
+                    <th style="background-color: rgb(218, 221, 177);">Interes Anterior</th>
+                    <th style="background-color: rgb(218, 221, 177);">Total Intereses A Pagar</th>
+                    <th>Intereses Recibidos</th>
+                    <th style="background-color: rgb(218, 221, 177);">Saldo Intereses</th>
+                    <th>Nueva Afiliacion</th>
+                    <th style="background-color: rgb(218, 221, 177);">Total Recibido</th>
+                    <th>Nota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in personas_activas %}
+                <tr class="{% cycle 'fila-impar' 'fila-par' %}" data-id="{{ i.id }}">
+                    <td>
+                        <input type="checkbox" class="select-checkbox" />
+                        <img src="/static/img/ui.png" class="custom-image oneclick">
+                    </td>
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.persona.id }}</td>
+                    <td data-field="id">{{ i.ahorro.id }}</td>
+                    <td>{{ i.credito.id }}</td>
+                    <td data-field="usuario"> {{ i.persona.apellido_1 }} {{ i.persona.apellido_2 }} {{ i.persona.nombre_1 }} {{ i.persona.nombre_2 }}</td>
+                    <td>{{ i.grupo.nombre }}</td>
+                    <td>
+                        <span data-id="{{ i.id }}" data-campo="num_recibo">{{ i.ahorro.num_recibo }}</span>
+                    </td>
+                    
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="aportes_anteriores">{{ i.ahorro.aportes_anteriores }}</span>
+                    </td>
+                    </td >
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="aportes_pendientes" >{{ i.ahorro.aportes_pendientes }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="aportes_por_pagar">{{ i.ahorro.aportes_por_pagar }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="aportes_recibidos" contenteditable="true">{{ i.ahorro.aportes_recibidos }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="saldo_aportes_por_pagar">{{ i.ahorro.saldo_aportes_por_pagar }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="retiro_de_aportes" contenteditable="true">{{ i.ahorro.retiro_de_aportes }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="total_de_aportes">{{ i.ahorro.total_de_aportes }}</span>
+                    </td>
+                    <td style="background-color: rgb(0, 0, 0);"></td>
+                    <!--.......................................CREDITO............................class="editable" contenteditable="true" data-id="{{ i.id }}".........................-->
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="solicitud_de_credito" contenteditable="true">{{ i.credito.solicitud_de_credito }}</span>
+                    </td>
+                    <td>
+                        <input type="date" data-campo="fecha_inicio" class="editable" contenteditable="true" data-id="{{ i.id }}">
+                        <span class="fecha-mostrada">{{ i.credito.fecha_inicio }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="fecha_final">{{ i.credito.fecha_final }}</span>
+                    </td>
+                    <td data-field="tahorro">
+                        <span class="editable" data-id="{{ i.id }}" data-campo="valor_credito_solicitado" contenteditable="true">{{ i.credito.valor_credito_solicitado }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="numero_dias_credito">{{ i.credito.numero_dias_credito }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="plazo_meses" contenteditable="true">{{ i.credito.plazo_meses }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="cuota_credito">{{ i.credito.cuota_credito }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="valor_cuota_total">{{ i.credito.valor_cuota_total }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="credito_actual">{{ i.credito.credito_actual }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="abono_credito" contenteditable="true">{{ i.credito.abono_credito }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="saldo_credito">{{ i.credito.saldo_credito }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="interes_credito">{{ i.credito.interes_credito }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="interes_anterior">{{ i.credito.interes_anterior }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="total_interes_a_pagar">{{ i.credito.total_interes_a_pagar }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="intereses_recibidos" contenteditable="true">{{ i.credito.intereses_recibidos }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="saldo_intereses">{{ i.credito.saldo_intereses }}</span>
+                    </td>
+                    <td>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="nueva_afiliacion" contenteditable="true">{{ i.credito.nueva_afiliacion }}</span>
+                    </td>
+                    <td style="background-color: rgb(218, 221, 177);">
+                        <span data-id="{{ i.id }}" data-campo="total_recibido">{{ i.credito.total_recibido }}</span>
+                    </td>
+                    <td data-field="notas">
+                        <span class="editable" data-id="{{ i.id }}" data-campo="nota" contenteditable="true" >{{ i.credito.nota }}</span>
+                    </td>
+                
+                </tr>
+            
+                {% endfor %}
+            </tbody>
+            
+            
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td id="sumaColumna1"></td>
+                    <td id="sumaColumna2"></td>
+                    <td id="sumaColumna3"></td>
+                    <td id="sumaColumna4"></td>
+                    <td id="sumaColumna5"></td>
+                    <td id="sumaColumna6"></td>
+                    <td id="sumaColumna7"></td>
+                    <td id="sumaColumna8"></td>
+                    <td id="sumaColumna9"></td>
+                    <td id="sumaColumna10"></td>
+                    <td id="sumaColumna11"></td>
+                    <td id="sumaColumna12"></td>
+                    <td id="sumaColumna13"></td>
+                    <td id="sumaColumna14"></td>
+                    <td style="background-color: rgb(0, 0, 0);" id="sumaColumna15"></td>
+                    <td id="sumaColumna16"></td>
+                    <td id="sumaColumna17"></td>
+                    <td id="sumaColumna18"></td>
+                    <td id="sumaColumna19"></td>
+                    <td id="sumaColumna20"></td>
+                    <td id="sumaColumna21"></td>
+                    <td id="sumaColumna22"></td>
+                    <td id="sumaColumna23"></td>
+                    <td id="sumaColumna24"></td>
+                    <td id="sumaColumna25"></td>
+                    <td id="sumaColumna26"></td>
+                    <td id="sumaColumna27"></td>
+                    <td id="sumaColumna28"></td>
+                    <td id="sumaColumna29"></td>
+                    <td id="sumaColumna30"></td>
+                    <td id="sumaColumna31"></td>
+                    <td id="sumaColumna32"></td>
+                    <td id="sumaColumna33"></td>
+                    <td id="sumaColumna34"></td>
+                </tr>
+            </tfoot>
+        </table>
+        {% endif %}
+    </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script>
+//_________________fecha inicial ______________________________
+
+//_________________Envia Datos A Views___________________________
+$('.editable[data-campo="fecha_inicio"]').on('change', function() {
+    var fechaInicio = $(this).val();
+    var parts = fechaInicio.split('-');
+    var fechaFormateada = parts[2] + '/' + parts[1] + '/' + parts[0];
+    
+    // Mostrar la fecha formateada en el elemento span.fecha-mostrada
+    $(this).next('.fecha-mostrada').text(fechaFormateada);
+});
+
+$(".editable").on("blur", function () {
+    var newText = $(this).text();
+    var prevText = $(this).data("prevText");
+    var personaId = $(this).data("id");  // Asegúrate de que estás extrayendo el ID correctamente
+    var campo = $(this).data("campo"); 
+    var fechaInicio = $(this).val();
+
+    if (newText !== prevText) {
+        $.ajax({
+            
+            url: '/actualizar_campo/',
+            type: 'POST',
+            data: {
+                
+                'persona_id': personaId,
+                'campo': campo,
+                'nuevo_valor': newText,
+                'fechaInicio':fechaInicio
+            },
+            success: function (response) {
+                if (response.success) {
+                    
+                    $('.aportes_recibidos').on('input', function() {
+                        // Lógica para actualizar col2 basada en col1
+                        alert('¡Datos guardados correctamente!');
+                    });
+                    window.location.reload();
+                    console.log("persona_id"+ personaId,);
+                    console.log("campo: " + campo);
+                    console.log("Nuevo valor: " + newText);
+                    console.log("Fecha_inicio: " + fechaInicio);
+                    //alert('¡Datos guardados correctamente!');
+
+                } else {
+                    console.error("Error al actualizar campo:", response.message);
+                    alert('Error al actualizar campo:  '+ personaId + ' - '+ campo + ' - '+ newText);
+                }
+            },
+            error: function (error) {
+                console.error("Error en la solicitud AJAX:", error);
+                alert('Error en la solicitud AJAX '+campo);
+            }
+        });
+        window.location.reload();
+    }
+});
+//_________________Ordenar____________________________________
+$(document).ready(function() {
+    var tfoot = $('table').find('tfoot');
+    $('table').find('tfoot').remove();
+
+    var rows = $('table').find('tr').get();
+    rows.sort(function(a, b) {
+        var nameA = $(a).find('[data-field="usuario"]').text().toUpperCase();
+        var nameB = $(b).find('[data-field="usuario"]').text().toUpperCase();
+
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0;
+    });
+    $.each(rows, function(index, row) {
+        $('table').append(row);
+    });
+    $('table').append(tfoot);
+});
+//_________________fila totales_______________________________
+$(document).ready(function() {
+    var columnas = [7, 8, 9, 10, 11, 12, 13, 14, 16, 19, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,33];
+    var sumas = [];
+
+    for (var i = 0; i < columnas.length; i++) {
+        sumas.push(0);
+    }
+
+    $('#compu_tabla tbody tr').each(function() {
+        for (var i = 0; i < columnas.length; i++) {
+            var indiceColumna = columnas[i];
+            var valorColumna = parseFloat($(this).find('td').eq(indiceColumna).text());
+
+            if (!isNaN(valorColumna)) {
+                sumas[i] += valorColumna;
+            }
+        }
+    });
+
+    for (var i = 0; i < columnas.length; i++) {
+        $('#sumaColumna' + columnas[i]).text(sumas[i].toLocaleString('es-ES'));
+    }
+
+    //texto columna 5
+    var sumaColumna5 = "TOTAL ==>";
+    var indiceColumna5 = "z"; 
+
+    $('#compu_tabla tbody tr').each(function() {
+        var valorColumna5 = parseFloat($(this).find('td').eq(indiceColumna5).text());
+        if (!isNaN(valorColumna5)) {sumaColumna5 += valorColumna5;}
+    });
+    $('#sumaColumna5').text(sumaColumna5); 
+
+});
+//_________________fila valor individual_______________________________
+$(document).ready(function() {
+    var cajita = 0; // Variable para almacenar el total de la columna 16
+
+    $('#compu_tabla tbody tr').each(function() {
+        var valorColumna16 = parseFloat($(this).find('td').eq(16).text());
+
+        if (!isNaN(valorColumna16)) {
+            cajita += valorColumna16; // Suma los valores de la columna 16
+        }
+    });
+});
+//_________________impresiones________________________________
+var selectedAhorros = [];
+$(document).ready(function () {
+
+    $('.oneclick').on('click', function () {
+        if (selectedAhorros.length === 0) {
+            // No hay elementos seleccionados, ejecutar imprimirRecibo
+            var tr = $(this).closest('tr');
+            imprimirRecibo(tr);
+        } else {
+            // Hay elementos seleccionados, ejecutar imprimirRecibos
+            imprimirRecibos();
+        }
+    });
+
+    $('.select-checkbox').on('change', function () {
+        var tr = $(this).closest('tr');
+        toggleSelection(tr);
+    });
+});
+function toggleSelection(tr) {
+    var ahorroId = tr.data('id');
+    var index = selectedAhorros.findIndex(item => item.data('id') === ahorroId);
+
+    if (index === -1) {
+        // No está seleccionado, agregar a la lista
+        selectedAhorros.push(tr);
+    } else {
+        // Está seleccionado, quitar de la lista
+        selectedAhorros.splice(index, 1);
+    }
+}
+function imprimirRecibos() {
+    if (selectedAhorros.length === 0) {
+        console.log('No hay recibos seleccionados para imprimir.');
+        return;
+    }
+
+    selectedAhorros.forEach(function (tr) {
+        imprimirRecibo(tr);
+        desmarcarCasillas();
+        console.log('lo lograste papaxitho.');
+    });
+}
+function desmarcarCasillas() {
+    $('.select-checkbox').prop('checked', false);
+    selectedAhorros = [];
+}
+function generarNumeroComprobante() {
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const longitudLetras = 2;  // Longitud de las letras en el comprobante
+    const numeros = '0123456789';
+    const longitudNumeros = 6;  // Longitud de los números en el comprobante
+
+    let resultado = '';
+
+    // Generar letras aleatorias
+    for (let i = 0; i < longitudLetras; i++) {
+        const indice = Math.floor(Math.random() * letras.length);
+        resultado += letras.charAt(indice);
+    }
+
+    // Agregar guion o cualquier otro separador
+    resultado += '-';
+
+    // Generar números aleatorios
+    for (let i = 0; i < longitudNumeros; i++) {
+        const indice = Math.floor(Math.random() * numeros.length);
+        resultado += numeros.charAt(indice);
+    }
+
+    return resultado;
+}
+function formatearNumero(numero) {
+    return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+function imprimirRecibo(tr) {
+    var usuario = tr.find('td[data-field="usuario"]').text().trim();
+    var columna1 = tr.find('td[data-field="columna1"]').text().trim();
+    var columna2 = tr.find('td[data-field="columna2"]').text().trim();
+    var columna3 = tr.find('td[data-field="columna3"]').text().trim();
+    var totahorro = tr.find('td[data-field="tahorro"]').text().trim();
+    var totacredito = tr.find('td[data-field="tcredito"]').text().trim();
+    var notas = tr.find('td[data-field="notas"]').text().trim();
+    var id = tr.find('td[data-field="id"]').text().trim();
+
+    var contentToPrint = document.createElement('div');
+    contentToPrint.innerHTML = `
+    <div style="text-align: center; font-family: 'Arial Rounded MT Bold', sans-serif; padding-top: 0;">
+            <img src="/static/img/factura.png" alt="Logo" style="width: 70px; height: 70px; margin-bottom: -20px;">
+            <h3 style="font-weight: bold; font-size: 14px; line-height: 0.8;">GRUPO DE AHORRO Y CRÉDITO</h3>
+            <h2 style="font-weight: bold; font-size: 14px; line-height: 0.8;">LOCAL - FONAFAM</h2>
+            <h2 style="font-weight: bold; font-size: 20px; line-height: 0.8;">"GACL-FONAFAM"</h2>
+            <p style="font-weight: bold; font-size: 12px; line-height: 0.8;">FONDO DE AHORRO FAMILIAR</p>
+            <p style="font-weight: bold; font-size: 12px; line-height: 0.8; white-space: normal;">"Nuestro Grupo y Tu.....Creciendo Juntos"</p>
+            <p style="text-align: left; font-weight: bold; font-size: 12px; line-height: 0.8;">
+                Comprobante Numero: <span style="float: right;">${generarNumeroComprobante()}</span>
+            </p>
+            <p style="text-align: left; font-weight: bold; font-size: 12px; line-height: 0.8;">FECHA: <span style="float: right;">${new Date().toLocaleDateString()}</span></p>
+            <p style="text-align: left; font-weight: bold; font-size: 12px; line-height: 0.8;">INTEGRANTE: <span style="float: right;">${id}</span></p>
+            <p style="font-weight: bold; font-size: 14px; line-height: 1;">${usuario}</p>
+            <hr>
+            <p style="text-align: left; font-weight: bold; font-size: 16px;">Descripción: <span style="float: right;">Valor</span></p>
+            <hr>
+            <p style="text-align: left; font-size: 12px; line-height: 1;">ABONO DEUDA: <span style="float: right;">3000</span></p>
+            <p style="text-align: left; font-size: 12px; line-height: 1;">AHORRO FONDO : <span style="float: right;">${columna3}</span></p>
+            <p style="text-align: left; font-size: 12px; line-height: 1;">INTERESES: <span style="float: right;">5000</span></p>
+            <hr>
+            <p style="text-align: left; font-weight: bold; font-size: 16px;">TOTAL: <span style="float: right;">${columna3}</span></p>
+            <hr>
+            <p style="text-align: left; font-weight: bold; font-size: 14px; line-height: 1;">Total Ahorros: <span style="float: right;">${formatearNumero(Number(totahorro))}</span></p>
+            <p style="text-align: left; font-weight: bold; font-size: 14px; line-height: 1;">Saldo Credito: <span style="float: right;">${formatearNumero(Number(totacredito))}</span></p>
+            <hr>
+            <p style="font-weight: bold; font-size: 14px; line-height: 1;">GRACIAS POR SU ASISTENCIA</p>
+            <hr>
+            <p style="text-align: left; font-size: 12px; line-height: 1;">Para Cualquier Reclamo Favor Conservar Este Ticket.</p>
+            <p style="text-align: left; font-size: 12px; line-height: 1;">NOTAS: </p>
+            <p style="text-align: left; font-size: 10px; line-height: 1;">${notas}</p>
+        </div>
+    `;
+
+    // Imprimir el recibo actual en un PDF diferente
+    html2pdf(contentToPrint, {
+        margin: 2,
+        filename: `factura_${usuario}_${id}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: [80, 195], orientation: 'portrait' },
+    });
+}
+
+</script>
+
+    </html>
+{% endblock %}

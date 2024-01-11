@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.section-person{
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.section-container {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.section-container-2 {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    /*margin-bottom: 20px;*/
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.section-header {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.btn-primary {
+    background-color: #79AC78;
+    border: 1px solid ; /* Bordes de color azul para el botón */
+    border-radius: 10px;
+    color: #fff;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+
+.btn-primary:hover {
+    background-color: #618264;
+}
+/* Estilo para la columna del medio */
+
+
+.section-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas con igual ancho */
+    gap: 33px; /* Espacio de 10px entre las columnas */
+}
+/* Estilo para la columna izquierda */
+.section-left {
+    grid-column: 1; /* Ocupa la primera columna */
+}
+/* Estilo para la columna derecha */
+.section-right {
+    grid-column: 2; /* Ocupa la segunda columna */
+}
+
+.section-container-2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Dos columnas con igual ancho */
+    gap: 33px; /* Espacio de 10px entre las columnas */
+}
+.section-left-2 {
+    grid-column: 1; /* Ocupa la primera columna */
+}
+/* Estilo para la columna derecha */
+.section-middle-2 {
+    grid-column: 2; /* Ocupa la segunda columna */
+}
+.section-right-2 {
+    grid-column: 3; /* Ocupa la segunda columna */
+}
+
+
+.header-container { 
+    background-color: #ffffff; /* Color de fondo azul, puedes cambiarlo */
+    padding: 20px; /* Espacio alrededor del encabezado */
+    border-radius: 20px;
+}
+.titulo_registro{
+    text-align: center;
+    color:#18191A
+}

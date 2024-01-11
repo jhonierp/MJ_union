@@ -1,0 +1,98 @@
+{% extends 'barra_lateral.html' %} 
+
+{% block content %}
+  
+<!DOCTYPE html>
+<!-- falta separar css y java -->
+<head>
+    <meta charset="UTF-8">
+    <title>Tu Préstamo</title>
+    <style>
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+
+            
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            color: #555;
+        }
+        
+        .btn-primary {
+            background-color: #79AC78;
+            border: 1px solid ; /* Bordes de color azul para el botón */
+            border-radius: 10px;
+            color: #fff;
+            padding: 15px 80px;
+            cursor: pointer;
+            font-size: 18px;
+            display: block; /* Para centrar el botón */
+            margin: 0 auto; /* Para centrar el botón */
+        }
+        .btn-primary:hover {
+            background-color: #618264;
+        }
+        select, .styled-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #000000; /* Bordes de color azul para los inputs */
+            border-radius: 10px;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    
+    
+    <div class="form-container">
+        <h1>Seleccione Fecha Y Grupo Para Trabajar</h1>
+        
+        <form action="tabla_main" method="GET">
+            
+            <label for="fecha">Fecha:</label>
+            <input type="month" id="fecha" name="fecha_sel" class="styled-input">
+            <p>Fecha seleccionada: <span id="mesYAnioSeleccionado"></span></p>
+
+            <label for="grupo">Grupo:</label>
+                <select id="grupo" name="grupo_sel" class="form-select" required>
+                    <option value="" disabled selected>seleccione aqui</option>
+                    {% for grupo in grupos %}
+                        <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+                    {% endfor %}
+                </select>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </div>
+    
+
+    <script>
+        const inputFecha = document.getElementById("fecha");
+        const mesYAnioSeleccionado = document.getElementById("mesYAnioSeleccionado");
+
+        inputFecha.addEventListener("input", function() {
+            const valorFecha = inputFecha.value;
+            const [anno, mes] = valorFecha.split('-'); // Dividir el valor de fecha en año y mes
+            const fechaFormatoPersonalizado = mes + '/' + anno; // Formatear como mes/año
+            mesYAnioSeleccionado.textContent = fechaFormatoPersonalizado;
+        });
+    </script>
+</body>
+</html>
+
+
+
+{% endblock %}
+
