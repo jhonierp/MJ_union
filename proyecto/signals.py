@@ -3,9 +3,12 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save   
 from .models import PersonasNaturales, PersonasAhorrosCreditos, Creditos,Ahorros
 
+
 @receiver(post_save, sender=PersonasNaturales)
 def crear_ahorros_y_creditos(sender, instance, created, **kwargs):
+    
     if created:
+        
         # Obtener los últimos IDs utilizados en las tablas Ahorros y Creditos
         ultimo_id_ahorros = Ahorros.objects.latest('id').id if Ahorros.objects.exists() else 0
         ultimo_id_creditos = Creditos.objects.latest('id').id if Creditos.objects.exists() else 0
@@ -32,7 +35,7 @@ def crear_ahorros_y_creditos(sender, instance, created, **kwargs):
         nuevo_credito.fecha_inicio="01/01/2023"
         nuevo_credito.fecha_final="01/02/2023"
         nuevo_credito.valor_credito_solicitado=0
-        nuevo_credito.numero_dias_credito=0
+        nuevo_credito.numero_dias_credito=30
         nuevo_credito.plazo_meses=1
         nuevo_credito.cuota_credito=0
         nuevo_credito.valor_cuota_total=0
@@ -44,7 +47,7 @@ def crear_ahorros_y_creditos(sender, instance, created, **kwargs):
         nuevo_credito.total_interes_a_pagar=0
         nuevo_credito.intereses_recibidos=0
         nuevo_credito.saldo_intereses=0
-        nuevo_credito.nueva_afiliacion=0
+        nuevo_credito.nueva_afiliacion=35000
         nuevo_credito.total_recibido=0
         nuevo_credito.nota="Na"
         nuevo_credito.save()

@@ -4,6 +4,7 @@ import math
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.shortcuts import render
 
 
 class Ahorros(models.Model):
@@ -15,28 +16,32 @@ class Ahorros(models.Model):
     saldo_aportes_por_pagar = models.FloatField(blank=True, null=True)
     retiro_de_aportes = models.FloatField(blank=True, null=True)
     total_de_aportes = models.FloatField(blank=True, null=True)
+    
 
     class Meta:
         db_table = 'ahorros'
-
+    
     def save(self, *args, **kwargs):
-        if self.aportes_por_pagar:
+        '''if self.aportes_por_pagar:
             aportes_pendientes = float(self.aportes_pendientes if self.aportes_pendientes else 0)
-
-            resultado = aportes_pendientes + 20000
+            
+            resultado = aportes_pendientes + self.aportes_por_pagar
 
             # Redondear hacia arriba con dos dígitos decimales de precisión
             resultado_redondeado = math.ceil(resultado * 100) / 100
             tot_apo = float(resultado_redondeado)
             self.aportes_por_pagar = tot_apo
 
-        super(Ahorros, self).save(*args, **kwargs)
+        super(Ahorros, self).save(*args, **kwargs)'''
         
         # Calcula el total de aportes cuando se actualizan los campos relacionados
         if self.aportes_recibidos is not None and self.aportes_anteriores is not None and self.retiro_de_aportes is not None:
             self.total_de_aportes = self.aportes_recibidos + self.aportes_anteriores - self.retiro_de_aportes
-
         super(Ahorros, self).save(*args, **kwargs)
+        '''if self.retiro_de_aportes >0 and self.total_de_aportes==0:
+
+
+        super(Ahorros, self).save(*args, **kwargs)'''
     
 
 class BeneficiariosPersonasNaturales(models.Model):
@@ -137,13 +142,13 @@ class Creditos(models.Model):
             else:
                 fecha_fin=f"{dia_f}/{me}/{año_new}"  
                 self.fecha_final=str(fecha_fin)
-            numero = 5000000
+            #numero = 5000000
 
             # Formatear el número con separadores de miles y un punto decimal
-            formatted_number = "{:,.0f}".format(numero).replace(',', ' ').replace('.', ',')
+            #formatted_number = "{:,.0f}".format(numero).replace(',', ' ').replace('.', ',')
 
             # Mostrar el número formateado
-            print(formatted_number)
+            #print(formatted_number)
         
         super(Creditos, self).save(*args, **kwargs)
         
@@ -160,18 +165,6 @@ class Creditos(models.Model):
 
         super(Creditos, self).save(*args, **kwargs)
 
-        if self.credito_actual is not None and self.numero_dias_credito is not None:
-            credito_actual = float(self.credito_actual if self.credito_actual else 0)
-            numero_dias_credito = float(self.numero_dias_credito if self.numero_dias_credito else 0)
-
-            resultado = credito_actual * 2 / 100 / 30 * numero_dias_credito
-
-            # Redondear hacia arriba con dos dígitos decimales de precisión
-            resultado_redondeado = math.ceil(resultado * 100) / 100
-            tot_apo = float(resultado_redondeado)
-            self.interes_credito = tot_apo
-
-        super(Creditos, self).save(*args, **kwargs)
 
         if self.abono_credito:#is not None
             credito_actual = self.credito_actual if self.credito_actual else 0
@@ -392,27 +385,3 @@ class TiposViviendas(models.Model):
 
     class Meta:
         db_table = 'tipos_viviendas'
-
-
-########################################################################
-# en miapp/models.py
-"""from django.contrib.auth.models import AbstractUser
-from django.db import models
-
-class CustomUser(AbstractUser):
-    email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-
-    # Otros campos personalizados que desees agregar
-
-    def __str__(self):
-        return self.username"""
-        
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-
-
-class CustomUser(AbstractUser):
-    rol = models.BooleanField(default=False)
-
