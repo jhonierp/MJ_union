@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'proyecto',
-    
+    "proyecto",
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -79,9 +79,9 @@ WSGI_APPLICATION = 'sistema.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bdc',
+        'NAME': 'bd_compumaster',
         'USER': 'root',
-        'PASSWORD': 'admin',
+        'PASSWORD': '111221',
         'HOST': 'localhost',  # Puedes cambiar esto según tu configuración
         'PORT': '3306',       # Puedes cambiar esto según tu configuración
     }
@@ -130,8 +130,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'proyecto/static')]
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#LOGIN_REDIRECT_URL = 'home'
-LOGIN_REDIRECT_URL = 'inicio_secion'
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = '/'
-
-AUTH_USER_MODEL = 'proyecto.CustomUser'

@@ -1,5 +1,6 @@
 {% extends 'barra_lateral.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
     <!DOCTYPE html>
     <html lang="en">
@@ -97,14 +98,26 @@
             .custom-image {
                 cursor: pointer;
             }
-            
+            .popover {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                z-index: 999; /* Asegura que el popover esté encima del resto del contenido */
+            }
         </style>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+        <!-- Agrega estas líneas en el head de tu HTML si aún no están presentes -->
         
     </head>
     <body>
+        <div id="miElementoHTML" style="display: none;">{{ fecha_seleccionada }}</div>
+        <div id="miElementoHTML2" style="display: none;">{{ grupo_select }}</div>
+
         <div class="header">
             <div>Administrador: {{ name_admin }} | Grupo: {{ grupo_l }}| Fecha: {{ mesYAnioSeleccionado }}</div>
             <!--<div class="po">Grupo: {{ grupo_l }}</div>
@@ -125,7 +138,14 @@
                     <th>Num Recibo</th>
                     <th style="background-color: rgb(218, 221, 177);">Aportes Anteriores</th>
                     <th style="background-color: rgb(218, 221, 177);">Aportes Pendientes</th>
-                    <th style="background-color: rgb(218, 221, 177);">Aportes Por Pagar</th>
+                    <th style="background-color: rgb(218, 221, 177); position: relative;">
+                        
+                        <a href="#" id="popover-trigger">Aportes Por Pagar</a>
+                        <div class="popover" id="popover-content">
+                          <input type="text" id="textoInput" placeholder="Ingrese texto">
+                          <button id="guardarBtn">Guardar</button>
+                        </div>
+                      </th>
                     <th>Aportes Recibidos</th>
                     <th style="background-color: rgb(218, 221, 177);">Saldos Aportes Por Pagar</th>
                     <th>Retiro De Aportes</th>
@@ -170,31 +190,31 @@
                     </td>
                     
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="aportes_anteriores">{{ i.ahorro.aportes_anteriores }}</span>
+                        <span data-id="{{ i.id }}" data-campo="aportes_anteriores">{{ i.ahorro.aportes_anteriores|floatformat|intcomma }}</span>
                     </td>
                     </td >
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="aportes_pendientes" >{{ i.ahorro.aportes_pendientes }}</span>
+                        <span data-id="{{ i.id }}" data-campo="aportes_pendientes" >{{ i.ahorro.aportes_pendientes|floatformat|intcomma }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="aportes_por_pagar">{{ i.ahorro.aportes_por_pagar }}</span>
+                        <span data-id="{{ i.id }}" data-campo="aportes_por_pagar">{{ i.ahorro.aportes_por_pagar|floatformat|intcomma }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="aportes_recibidos" contenteditable="true">{{ i.ahorro.aportes_recibidos }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="aportes_recibidos" contenteditable="true">{{ i.ahorro.aportes_recibidos|floatformat|intcomma}}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="saldo_aportes_por_pagar">{{ i.ahorro.saldo_aportes_por_pagar }}</span>
+                        <span data-id="{{ i.id }}" data-campo="saldo_aportes_por_pagar">{{ i.ahorro.saldo_aportes_por_pagar|floatformat|intcomma }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="retiro_de_aportes" contenteditable="true">{{ i.ahorro.retiro_de_aportes }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="retiro_de_aportes" contenteditable="true">{{ i.ahorro.retiro_de_aportes|floatformat|intcomma }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="total_de_aportes">{{ i.ahorro.total_de_aportes }}</span>
+                        <span data-id="{{ i.id }}" data-campo="total_de_aportes">{{ i.ahorro.total_de_aportes|floatformat|intcomma }}</span>
                     </td>
                     <td style="background-color: rgb(0, 0, 0);"></td>
                     <!--.......................................CREDITO............................class="editable" contenteditable="true" data-id="{{ i.id }}".........................-->
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="solicitud_de_credito" contenteditable="true">{{ i.credito.solicitud_de_credito }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="solicitud_de_credito" contenteditable="true">{{ i.credito.solicitud_de_credito|floatformat }}</span>
                     </td>
                     <td>
                         <input type="date" data-campo="fecha_inicio" class="editable" contenteditable="true" data-id="{{ i.id }}">
@@ -204,49 +224,49 @@
                         <span data-id="{{ i.id }}" data-campo="fecha_final">{{ i.credito.fecha_final }}</span>
                     </td>
                     <td data-field="tahorro">
-                        <span class="editable" data-id="{{ i.id }}" data-campo="valor_credito_solicitado" contenteditable="true">{{ i.credito.valor_credito_solicitado }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="valor_credito_solicitado" contenteditable="true">{{ i.credito.valor_credito_solicitado|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="numero_dias_credito">{{ i.credito.numero_dias_credito }}</span>
+                        <span data-id="{{ i.id }}" data-campo="numero_dias_credito">{{ i.credito.numero_dias_credito|floatformat }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="plazo_meses" contenteditable="true">{{ i.credito.plazo_meses }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="plazo_meses" contenteditable="true">{{ i.credito.plazo_meses|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="cuota_credito">{{ i.credito.cuota_credito }}</span>
+                        <span data-id="{{ i.id }}" data-campo="cuota_credito">{{ i.credito.cuota_credito|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="valor_cuota_total">{{ i.credito.valor_cuota_total }}</span>
+                        <span data-id="{{ i.id }}" data-campo="valor_cuota_total">{{ i.credito.valor_cuota_total|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="credito_actual">{{ i.credito.credito_actual }}</span>
+                        <span data-id="{{ i.id }}" data-campo="credito_actual">{{ i.credito.credito_actual|floatformat }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="abono_credito" contenteditable="true">{{ i.credito.abono_credito }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="abono_credito" contenteditable="true">{{ i.credito.abono_credito|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="saldo_credito">{{ i.credito.saldo_credito }}</span>
+                        <span data-id="{{ i.id }}" data-campo="saldo_credito">{{ i.credito.saldo_credito|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="interes_credito">{{ i.credito.interes_credito }}</span>
+                        <span data-id="{{ i.id }}" data-campo="interes_credito">{{ i.credito.interes_credito|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="interes_anterior">{{ i.credito.interes_anterior }}</span>
+                        <span data-id="{{ i.id }}" data-campo="interes_anterior">{{ i.credito.interes_anterior|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="total_interes_a_pagar">{{ i.credito.total_interes_a_pagar }}</span>
+                        <span data-id="{{ i.id }}" data-campo="total_interes_a_pagar">{{ i.credito.total_interes_a_pagar|floatformat }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="intereses_recibidos" contenteditable="true">{{ i.credito.intereses_recibidos }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="intereses_recibidos" contenteditable="true">{{ i.credito.intereses_recibidos|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="saldo_intereses">{{ i.credito.saldo_intereses }}</span>
+                        <span data-id="{{ i.id }}" data-campo="saldo_intereses">{{ i.credito.saldo_intereses|floatformat }}</span>
                     </td>
                     <td>
-                        <span class="editable" data-id="{{ i.id }}" data-campo="nueva_afiliacion" contenteditable="true">{{ i.credito.nueva_afiliacion }}</span>
+                        <span class="editable" data-id="{{ i.id }}" data-campo="nueva_afiliacion" contenteditable="true">{{ i.credito.nueva_afiliacion|floatformat }}</span>
                     </td>
                     <td style="background-color: rgb(218, 221, 177);">
-                        <span data-id="{{ i.id }}" data-campo="total_recibido">{{ i.credito.total_recibido }}</span>
+                        <span data-id="{{ i.id }}" data-campo="total_recibido">{{ i.credito.total_recibido|floatformat }}</span>
                     </td>
                     <td data-field="notas">
                         <span class="editable" data-id="{{ i.id }}" data-campo="nota" contenteditable="true" >{{ i.credito.nota }}</span>
@@ -298,6 +318,7 @@
                 </tr>
             </tfoot>
         </table>
+        
         {% endif %}
     </body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -305,7 +326,49 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script>
-//_________________fecha inicial ______________________________
+//_________________Alerta______________________________
+$(document).ready(function() {
+  $('#popover-trigger').on('click', function(e) {
+    e.preventDefault();
+    $('#popover-content').toggle();
+  });
+
+  $('#guardarBtn').on('click', function() {
+    var valorIngresado = $('#textoInput').val();
+    console.log('Valor ingresado:', valorIngresado);
+
+    var fecha_select = document.getElementById('miElementoHTML').innerText;
+    var grupo_select = document.getElementById('miElementoHTML2').innerText;
+    
+    //console.log('Valor fecha_select:', fecha_select);
+    //console.log('Valor grupo_select:', grupo_select);
+    // Construir la URL para la solicitud AJAX
+    var ajaxURL = '/tabla_main?fecha_sel='+fecha_select+'&grupo_sel='+grupo_select;
+
+    // Enviar el número ingresado al backend (Django) usando AJAX
+    $.ajax({
+        type: 'POST',
+        url: ajaxURL,
+        data: { 'input_apo_pag': valorIngresado }, // Envía el número como parámetro
+        success: function(response) {
+            console.log('¡Número enviado al backend con éxito!');
+            window.location.reload();
+        },
+        error: function(error) {
+            console.error('Error al enviar el número al backend:', error);
+        }
+    });
+
+    $('#popover-content').hide();
+    });
+
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('#popover-trigger').length && !$(e.target).closest('#popover-content').length) {
+      $('#popover-content').hide();
+    }
+  });
+});
+
 
 //_________________Envia Datos A Views___________________________
 $('.editable[data-campo="fecha_inicio"]').on('change', function() {

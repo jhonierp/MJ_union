@@ -1,6 +1,8 @@
 from ast import GeneratorExp
+from audioop import maxpp
 import datetime
 from decimal import ROUND_CEILING, Decimal
+import math
 from venv import logger
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -8,20 +10,19 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from datetime import date, timedelta
 from django.db.models import Q
-from requests import request
-from .forms import PNatuForm, RegistroUsuarioForm
+
+from django.dispatch import Signal
+from .forms import PNatuForm
 from django.db.models import F, Sum, Avg
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
-
+from django.db.models import Max
 
 from proyecto.models import (Ahorros, BeneficiariosPersonasNaturales, Creditos, Discapacidades, PersonasBeneficiarios, PersonasNaturales,  Ocupaciones,TiposGeneros,
  Paises,TiposDocumentos, Departamentos, Municipios,
  Estudios,TiposViviendas,Parentescos,Porcentajes,  EstadosCiviles,Grupos,PersonasAdministrativas,PersonasAhorrosCreditos)
 
 # Create your views here.
-
 
 @login_required
 def fun_ahor(request):
@@ -47,27 +48,124 @@ def fun_prueb_form(request):
 
     return render(request,"prueb_form.html",{'formulario':formulario} )
 
-
+@csrf_exempt
 @login_required
 def fun_tab_main(request):
+
     #Se convierte la fecha seleccionada en solo mes/año
-    fecha_seleccionada = request.GET.get('fecha_sel') 
+    fecha_seleccionada = request.GET.get('fecha_sel')
     partes_fecha = fecha_seleccionada.split('-')
     mesYAnioSeleccionado = f"{partes_fecha[1]}/{partes_fecha[0]}" if len(partes_fecha) == 2 else ""
     #La fecha seleccionada en mes/año, ahora se regresa un mes (ej.10/2023, mes_anterior_texto= 09/2023 )
     if len(partes_fecha) == 2 and int(partes_fecha[1]) > 1:
-        partes_fecha[1] = str(int(partes_fecha[1]) - 1)
-        mes_anterior_texto = f"{partes_fecha[1]}/{partes_fecha[0]}"
+        if int(partes_fecha[1]) < 10:
+            partes_fecha[1] = str(int(partes_fecha[1]) - 1)
+            mes_anterior_texto = f"0{partes_fecha[1]}/{partes_fecha[0]}"
+        else:
+            partes_fecha[1] = str(int(partes_fecha[1]) - 1)
+            mes_anterior_texto = f"{partes_fecha[1]}/{partes_fecha[0]}"
+    
     elif len(partes_fecha) == 2 and int(partes_fecha[1]) == 1:
         partes_fecha[1]=12
         partes_fecha[0] = str(int(partes_fecha[0]) - 1)
         mes_anterior_texto = f"{partes_fecha[1]}/{partes_fecha[0]}"
     else:
         pass
+    
     #Se llama el grupo seleccionado
     grupo_select = request.GET.get('grupo_sel')
-    #guardamos las personas que cumplan esas 3 condiciones en la tabla PersonasAhorrosCreditos
+    #guardamos las personas que cumplan esas 3 condiciones de la tabla PersonasAhorrosCreditos
     personas_activas = PersonasAhorrosCreditos.objects.filter(fecha=mesYAnioSeleccionado, estado='act', grupo_id=grupo_select)
+
+    
+    if len(personas_activas) ==0:  # Verifica si el QuerySet está vacío
+        personas_activas2 = PersonasAhorrosCreditos.objects.filter(fecha=mes_anterior_texto, estado='act', grupo_id=grupo_select)
+        
+        if personas_activas2.exists():  # Verifica si personas_activas2 tiene elementos
+            #(inicio)
+            #aqui SOLO sacamos el valor de APORTES POR PAGAR
+            #del mes anterior, para colocar el mismo en el APORTES POR PAGAR
+            #del siguiente mes (el cual es vacio)
+            for h in personas_activas2:
+                id_after_ahorro=0
+                id_after_ahorro= h.ahorro_id
+            ahorro_after= Ahorros.objects.get(id=id_after_ahorro)
+            aportes_por_pagar_after = ahorro_after.aportes_por_pagar
+            #(fin)
+            ultimos_ids = PersonasAhorrosCreditos.objects.aggregate(
+                    Max('id'), Max('ahorro_id'), Max('credito_id')
+                )
+            nuevo_id_general = int(ultimos_ids['id__max'] + 1 if ultimos_ids['id__max'] else 1)
+            nuevo_id_ahorro = int(ultimos_ids['ahorro_id__max'] + 1 if ultimos_ids['ahorro_id__max'] else 1)
+            nuevo_id_credito = int(ultimos_ids['credito_id__max'] + 1 if ultimos_ids['credito_id__max'] else 1)
+            apo_pag_after =  float(aportes_por_pagar_after)
+            for persona in personas_activas2:   
+                '''print("____________personas___________________")
+                print("fechca_:____",mes_anterior_texto)
+                print("fechca_:____",mesYAnioSeleccionado)
+                print("nuevo_id_general::: ",nuevo_id_general)
+                print("nuevo_id_ahorro::: ",nuevo_id_ahorro)
+                print("nuevo_id_credito::: ",nuevo_id_credito)
+                print("cant_pa2::: ",len(personas_activas2))'''
+
+                nuevo_ahorro = Ahorros(id=nuevo_id_ahorro)
+                nuevo_ahorro.num_recibo=0
+                nuevo_ahorro.aportes_anteriores=0
+                nuevo_ahorro.aportes_pendientes=0
+                nuevo_ahorro.aportes_por_pagar=apo_pag_after
+                nuevo_ahorro.aportes_recibidos=0
+                nuevo_ahorro.saldo_aportes_por_pagar=0
+                nuevo_ahorro.retiro_de_aportes=0
+                nuevo_ahorro.total_de_aportes=0
+                nuevo_ahorro.save()
+
+                # Crear una nueva instancia de Creditos y asignarle el nuevo ID
+                nuevo_credito = Creditos(id=nuevo_id_credito)
+                nuevo_credito.solicitud_de_credito=0
+                nuevo_credito.fecha_inicio="01/01/2023"
+                nuevo_credito.fecha_final="01/02/2023"
+                nuevo_credito.valor_credito_solicitado=0
+                nuevo_credito.numero_dias_credito=30
+                nuevo_credito.plazo_meses=1
+                nuevo_credito.cuota_credito=0
+                nuevo_credito.valor_cuota_total=0
+                nuevo_credito.credito_actual=0
+                nuevo_credito.abono_credito=0
+                nuevo_credito.saldo_credito=0
+                nuevo_credito.interes_credito=0
+                nuevo_credito.interes_anterior=0
+                nuevo_credito.total_interes_a_pagar=0
+                nuevo_credito.intereses_recibidos=0
+                nuevo_credito.saldo_intereses=0
+                nuevo_credito.nueva_afiliacion=0
+                nuevo_credito.total_recibido=0
+                nuevo_credito.nota="Na"
+                nuevo_credito.save()
+                nueva_instancia = PersonasAhorrosCreditos(
+                    id=nuevo_id_general,
+                    persona_id=persona.persona.id,
+                    ahorro_id=nuevo_id_ahorro,
+                    credito_id=nuevo_id_credito,
+                    fecha=mesYAnioSeleccionado,
+                    grupo_id=persona.grupo.id,
+                    estado="act"
+                )
+    
+                # Guardar la nueva instancia en la base de datos
+                nueva_instancia.save()
+                nuevo_id_general +=1
+                nuevo_id_ahorro +=1
+                nuevo_id_credito +=1
+                #print(f"Persona ID: {persona.id}, Ahorro ID: {persona.ahorro}, Crédito ID: {persona.credito}, Persona ID: {persona.persona.id}, Estado: {persona.estado}, Grupo ID: {persona.grupo.id}, Fecha: {persona.fecha}")
+        else:
+            pass
+            #for persona in personas_activas:
+                #print(f"Persona ID: {persona.id}, Ahorro ID: {persona.ahorro}, Crédito ID: {persona.credito}, Persona ID: {persona.persona.id}, Estado: {persona.estado}, Grupo ID: {persona.grupo.id}, Fecha: {persona.fecha}")
+            #print("No hay elementos en personas_activas2")
+            #print("mat",mes_anterior_texto)
+    else:
+        personas_activas=personas_activas
+        print("El QuerySet tiene elementos")
     # recorremos las personas que miramos en tabla_main
     for persona_activa in personas_activas:
         '''
@@ -93,10 +191,18 @@ def fun_tab_main(request):
         persona_activa.credito.valor_cuota_total=valor_cuota_total
         persona_activa.credito.save()
         #(fin)
+        #(inicio)
+        #estos es para que SI LA PEROSONA VA A RETIRAR TODOO DE TOTAL_DE_APORTES, ENTONCES LE VA COLCOAR 35K EN NUEVA_AFILIACION
+        #porque eso significa que la persona se va a RETIRAR
+        if persona_activa.ahorro.retiro_de_aportes>0 and persona_activa.ahorro.total_de_aportes==0:
+            persona_activa.credito.nueva_afiliacion = float(35000)
+            print("person_activated_in_new_condition: ", persona_activa)
+        #(fin)
         
         a=persona_activa.ahorro.aportes_recibidos+persona_activa.credito.abono_credito+persona_activa.credito.intereses_recibidos+ persona_activa.credito.nueva_afiliacion
         persona_activa.credito.total_recibido=float(a)
         persona_activa.credito.save()
+        
 
         #registros se guardan las personas que tengan un resgitro antiguo, es decir mes anterior (inicio)
         #luego se las recorre y guardamos los valores estaticos (ej.aportes_anteriores tiene el valor de total_de_aportes del anterior mes)
@@ -122,6 +228,7 @@ def fun_tab_main(request):
     #esot son variables que solo se usan para la parte de arriba de la tabla para dar informacion 
     #de cual apartado estamos(inicio)
     grupo_select2 = int(grupo_select)
+
     lista_personas = PersonasAdministrativas.objects.all()
     lista_grupos = Grupos.objects.all()
 
@@ -134,37 +241,123 @@ def fun_tab_main(request):
         if k.id == id_administrador:
             name_admin = k.nombres
     #(fin)
+    #(inicio)
+    #todo esto es para aportes_por_pagar la funcion que tiene, se escoge las personas que se filtraron
+    #y se les cambia el valor de esa columna segun lo que escriban 
+    input_apo_pag = request.POST.get('input_apo_pag')
+    apo_pagar_new = input_apo_pag
+    if apo_pagar_new:
+        for i in personas_activas:
+            apo_pagar_=float(apo_pagar_new)       
+            p_id=0
+            p_id=i.id
+            persona_ahorro_credito = PersonasAhorrosCreditos.objects.get(id=p_id)
+            ahorro = persona_ahorro_credito.ahorro
+            #actualiza la aportes_recibidos al modificar aportes_por_pagar
+            aportes_recibidos = ahorro.aportes_recibidos if ahorro else None
+            if  apo_pagar_ > aportes_recibidos:    
+                resta = float(apo_pagar_-aportes_recibidos)
+                setattr(ahorro, "aportes_por_pagar", apo_pagar_)
+                setattr(ahorro, "saldo_aportes_por_pagar", resta)
+                ahorro.save()
+            else:
+                cero = float(0.0)
+                setattr(ahorro, "aportes_por_pagar", apo_pagar_)
+                setattr(ahorro, "saldo_aportes_por_pagar", cero)
+                ahorro.save()
+    else:
+        print("vacio xd")
+    #(fin)
+        
+    #(inicio)
+    #INTERES_CREDITO
+    for zz in personas_activas:
+        #print("_________________________")
+        p_id=0
+        p_id=zz.id
+        pp_id=zz.persona_id
+        
+        PNat = PersonasNaturales.objects.get(id=pp_id)
+        persona_ahorro_credito = PersonasAhorrosCreditos.objects.get(id=p_id)
+        PCred_id=persona_ahorro_credito.credito_id
+        creditos_us = Creditos.objects.get(id=PCred_id)
+        valor2_cred_actu=creditos_us.credito_actual
+        valor3_dias=creditos_us.numero_dias_credito
+        
+        name=PNat.nombre_1
+        ocup=PNat.ocupacion.descripcion 
+        ocup_id=PNat.ocupacion.id
+
+        #print("persona_ahorro_credito: ", p_id )
+        #print("person_id: ", pp_id )
+        #print("name: ", name )
+        #print("ocupa_id: ",ocup_id )
+        #print("ocupacion: ",ocup )
+        #print("credito_id: ",PCred_id )
+        #print("cred_actu: ",valor2_cred_actu )
+        #print("numero_dias_credito: ",valor3_dias )
+        
+        
+        if ocup_id == 1: #estudiante
+
+            resultado = valor2_cred_actu * 1.5 / 100 / 30 * valor3_dias #el primer 30 es de formula y el segundo es porque un mes son 30 dias 
+            resultado_redondeado = math.ceil(resultado * 100) / 100
+            tot_apo = float(resultado_redondeado)
+            #print("tot_apo_est: ",tot_apo)
+            setattr(creditos_us, "interes_credito", tot_apo)
+            creditos_us.save()
+
+        elif ocup_id == 6: #admin
+
+            resultado = valor2_cred_actu * 1 / 100 / 30 * valor3_dias
+            resultado_redondeado = math.ceil(resultado * 100) / 100
+            tot_apo = float(resultado_redondeado)
+            #print("tot_apo_adm: ",tot_apo)
+            setattr(creditos_us, "interes_credito", tot_apo)
+            creditos_us.save()
+        elif ocup_id == 5: #discapacitado
+
+            resultado = valor2_cred_actu * 0 / 100 / 30 * valor3_dias
+            resultado_redondeado = math.ceil(resultado * 100) / 100
+            tot_apo = float(resultado_redondeado)
+            #print("tot_apo_disca: ",tot_apo)
+            setattr(creditos_us, "interes_credito", tot_apo)
+            creditos_us.save()
+        else: #normal
+
+            resultado = valor2_cred_actu * 2 / 100 / 30 * valor3_dias
+            resultado_redondeado = math.ceil(resultado * 100) / 100
+            tot_apo = float(resultado_redondeado)
+            #print("tot_apo_otro: ",tot_apo)
+            setattr(creditos_us, "interes_credito", tot_apo)
+            creditos_us.save()
+
+    #(fin)
     datos = {
         'mesYAnioSeleccionado':mesYAnioSeleccionado,
         'name_admin': name_admin,
         'grupo_l': grupo_l,
-        'personas_activas':personas_activas
+        'personas_activas':personas_activas,
+        'numero_recibido':apo_pagar_new,
+        #estos 2 de abajo son diferentes a los 2 de arriba
+        'grupo_select':grupo_select,
+        'fecha_seleccionada':fecha_seleccionada
     }
     return render(request, "Tablas/tabla_main.html",datos)
 
 @csrf_exempt
 def actualizar_campo(request):
-    if request.method == 'POST':
-        
+    if request.method == 'POST':        
         persona_id = request.POST.get('persona_id')
         campo = request.POST.get('campo')
         rote = request.POST.get('nuevo_valor')
-        
-        '''print("_____________________________________________________")
+        print("_____________________________________________________")
         print(f"persona id:::::::::::::::::::::: {persona_id}")
         print(f"campo     ::::::::::::::::::::::: {campo}")
-        print(f"nuevo_valor::::::::::::::::::::: {rote}")'''
+        print(f"nuevo_valor::::::::::::::::::::: {rote}")
+        
         try:
-            if campo == "aportes_pendientes":
-                nuevo_valor=float(rote)
-                apo_pagar= nuevo_valor + 20000.0
-                persona_ahorro_credito = PersonasAhorrosCreditos.objects.get(id=persona_id)
-                ahorro = persona_ahorro_credito.ahorro
-                
-                setattr(ahorro, campo, nuevo_valor)
-                setattr(ahorro, "aportes_por_pagar", apo_pagar)
-                ahorro.save()
-            elif campo == "aportes_recibidos":
+            if campo == "aportes_recibidos":
                 nuevo_valor=float(rote)
                 persona_ahorro_credito = PersonasAhorrosCreditos.objects.get(id=persona_id)
                 ahorro = persona_ahorro_credito.ahorro
@@ -193,7 +386,6 @@ def actualizar_campo(request):
 
                 setattr(ahorro, campo, nuevo_valor)
                 setattr(ahorro, "total_de_aportes", tot_apo)
-
 
                 ahorro.save()
             elif campo == "valor_credito_solicitado":
@@ -534,7 +726,7 @@ def fun_hom(request):
     grupos = Grupos.objects.all()
     
     return render(request,"home.html",{'grupos':grupos})
-#####################################################
+@login_required
 def fun_re_us(request):
     generos = TiposGeneros.objects.all()
     ocupaciones = Ocupaciones.objects.all()
@@ -550,16 +742,9 @@ def fun_re_us(request):
     estadosc = EstadosCiviles.objects.all()
     grupos = Grupos.objects.all()
     person_ac = PersonasAhorrosCreditos.objects.all()
-    
 
     
     if request.method == 'POST':
-        
-        form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-        
         fecha_actual = date.today()
         pase = fecha_actual.strftime("%m/%Y")
         mes_y_anio_actual = str(pase)
@@ -599,7 +784,6 @@ def fun_re_us(request):
         nombre_completo_familiar = request.POST.get('nombre_referencia', None)
         direccion_familiar = request.POST.get('direccion_referencia', None)
         celular_familiar = request.POST.get('telefono_referencia', None)
-        
         # Asegúrate de obtener el valor correcto
         grupo_id = request.POST['grupo']  # Asegúrate de obtener el valor correcto
         
@@ -674,71 +858,10 @@ def fun_re_us(request):
             persona_beneficiario.save()
         messages.success(request, 'Usuario y beneficiarios registrados exitosamente.')
         return redirect(fun_hom)  # Reemplaza 'pagina_de_exito' con la URL de tu elección
-        messages.success(request, 'Usuario y beneficiarios registrados exitosamente.')
+    messages.success(request, 'Usuario y beneficiarios registrados exitosamente.')
 
-    else:
-            form = RegistroUsuarioForm()
-    
     return render(request,"Registros/registro_user.html",{'generos':generos,
     'ocupaciones':ocupaciones,'paises':paises,'documentos':documentos,
     'departamentos':departamentos,'ciudades':ciudades,
     'estudios':estudios,'viviendas':viviendas,'discapacidades':discapacidades,
-    'parentescos':parentescos,'porcentajes':porcentajes,'estadosc':estadosc,'grupos':grupos,'form': form})
-################################################
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-
-from django.shortcuts import render, redirect
-
-@login_required
-def registro_usuario(request):
-    if request.method == 'POST':
-        form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            # Puedes agregar lógica adicional después de que el usuario se registre
-            return redirect('pagina_exito')  # Reemplaza 'pagina_exito' con la URL de tu elección
-    else:
-        form = RegistroUsuarioForm()
-
-    return render(request, 'Registros/registro_user.html', {'form': form})
-
-
-# tu_app/views.py
-# tu_app/views.py
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .forms import LoginForm
-
-def inicio_sesion(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-
-            if user:
-                login(request, user)
-
-                if user.is_superuser:
-                    return redirect(fun_hom)
-                elif user.rol:
-                    return redirect(fun_tab_main)
-                else:
-                    return redirect(fun_visu)
-     
-    else:
-        form = LoginForm()
-
-    return render(request, 'registration/login.html', {'form': form})
-
-
-
-@login_required
-def fun_visu(request):
-    return render(request,"visu/index.html")
-@login_required
-def fun_infvisu(request):
-    return render(request,"visu/informacion.html")
+    'parentescos':parentescos,'porcentajes':porcentajes,'estadosc':estadosc,'grupos':grupos})
